@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JOKESTECH // SPARCstation Technical Dossier & Systems Lab</title>
+
+  <!-- Typography: EB Garamond (Serif) & IBM Plex Mono + Courier Prime (Monospace) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons for Industrial Controls -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['EB Garamond', 'Georgia', 'serif'],
+            mono: ['IBM Plex Mono', 'Courier Prime', 'monospace'],
+            typewriter: ['Courier Prime', 'monospace'],
+          },
+          colors: {
+            // Warm Parchment Blueprint Mode (Default)
+            bp: {
+              bg: '#f4ede2',
+              surface: '#ebe2d3',
+              paper: '#f9f6f0',
+              border: '#cfc4b0',
+              line: '#b8a994',
+              ink: '#1c2833',
+              subtle: '#625b50',
+              navy: '#183153',
+              amber: '#c25e00',
+              crimson: '#9e2a2b',
+              forest: '#2d6a4f',
+              accent: '#2b4c7e'
+            },
+            // CRT Phosphor Workstation Night Mode
+            crt: {
+              bg: '#0d131a',
+              surface: '#151f2b',
+              panel: '#1a2737',
+              border: '#2c4058',
+              amber: '#ff9800',
+              green: '#39ff14',
+              cyan: '#38bdf8',
+              glow: 'rgba(56, 189, 248, 0.2)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+
+</head>
+
+<link rel="stylesheet" href="css/custom.css">
+
+<body class="bg-bp-bg dark:bg-crt-bg text-bp-ink dark:text-slate-200 font-serif min-h-screen drafting-grid selection:bg-bp-navy selection:text-white dark:selection:bg-crt-green dark:selection:text-black transition-colors duration-200">
+
+  <!-- Floating Toast / Audio HUD -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-200 pointer-events-none flex items-center gap-3 bg-bp-paper dark:bg-crt-panel border-2 border-bp-navy dark:border-crt-cyan px-4 py-2.5 font-mono text-xs shadow-xl">
+    <i class="fa-solid fa-microchip text-bp-amber dark:text-crt-amber text-sm"></i>
+    <span id="toast-text" class="text-bp-ink dark:text-slate-100 font-semibold tracking-wide">SYSTEM TELEMETRY DISPATCHED</span>
+  </div>
+
+  <!-- Rackmount Header / Telemetry Control Panel -->
+  <header class="w-full bg-bp-surface dark:bg-crt-surface border-b-2 border-bp-border dark:border-crt-border sticky top-0 z-40 shadow-md">
+    <div class="ruler-top w-full"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Top Instrumentation Line -->
+      <div class="flex flex-wrap items-center justify-between py-2 border-b border-bp-border dark:border-slate-800 font-mono text-[11px] text-bp-subtle dark:text-slate-400">
+        
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-bp-ink dark:text-slate-200 tracking-wider">STATION:</span>
+            <span class="px-1.5 py-0.5 bg-bp-paper dark:bg-slate-900 border border-bp-line dark:border-slate-700 text-bp-navy dark:text-crt-cyan">SPARC-64X // LunarX-ENG</span>
+          </div>
+          <span class="hidden md:inline text-bp-line dark:text-slate-700">|</span>
+          <div class="hidden sm:flex items-center gap-1.5">
+            <span class="font-semibold text-bp-ink dark:text-slate-300">KERNEL:</span>
+            <span>UNIX-SYSV.5-CUSTOM</span>
+          </div>
+        </div>
+
+        <!-- Telemetry Indicators & Clock -->
+        <div class="flex items-center gap-5 mt-1 sm:mt-0">
+          <!-- Hardware LED Array -->
+          <div class="flex items-center gap-3 bg-bp-paper dark:bg-slate-900 px-2.5 py-1 border border-bp-border dark:border-slate-800">
+            <div class="flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-emerald-600 dark:bg-crt-green animate-pulse"></span>
+              <span class="text-[9px] font-bold">PWR</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-amber-600 dark:bg-crt-amber"></span>
+              <span class="text-[9px] font-bold">NET</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-blue-600 dark:bg-crt-cyan"></span>
+              <span class="text-[9px] font-bold">BUS</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span class="text-[9px] font-bold">SEC</span>
+            </div>
+          </div>
+
+          <!-- UTC Clock -->
+          <div class="font-mono text-bp-ink dark:text-crt-cyan font-bold flex items-center gap-1.5">
+            <i class="fa-regular fa-clock text-[10px]"></i>
+            <span id="utc-clock">00:00:00 UTC</span>
+          </div>
+
+          <!-- Theme Workstation Dial Switcher -->
+          <button id="theme-toggle-btn" onclick="toggleWorkstationTheme()" class="tactile-btn px-2.5 py-1 text-[10px] font-mono flex items-center gap-1.5 uppercase font-bold" title="Switch Display Mode: Parchment Blueprint vs Night CRT">
+            <i class="fa-solid fa-circle-half-stroke text-bp-amber dark:text-crt-amber"></i>
+            <span id="theme-label" class="hidden sm:inline">CRT Night</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Navigation Strip & Station Brand -->
+      <div class="flex items-center justify-between h-14">
+        
+        <!-- Engineering Seal & Station Callout -->
+        <a href="#dossier" class="flex items-center gap-3 group cursor-pointer">
+          <div class="w-8 h-8 rounded bg-bp-navy dark:bg-slate-900 text-white dark:text-crt-cyan border border-bp-line dark:border-crt-cyan flex items-center justify-center font-mono font-bold text-sm shadow-inner">
+            MF
+          </div>
+          <div class="leading-tight">
+            <span class="font-serif font-bold text-lg text-bp-navy dark:text-white tracking-wide block">Muhammad Farras Jami</span>
+            <span class="font-mono text-[10px] text-bp-subtle dark:text-slate-400 uppercase tracking-widest block">Systems, Wire & Packet Engineering</span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Matrix -->
+        <nav class="hidden md:flex items-center space-x-1 font-mono text-xs">
+          <a href="#dossier" class="tactile-btn px-3 py-1.5 font-medium text-bp-ink dark:text-slate-200">[1] Dossier</a>
+          <a href="#labs" class="tactile-btn px-3 py-1.5 font-medium text-bp-ink dark:text-slate-200">[2] Web Labs</a>
+          <a href="#multimedia" class="tactile-btn px-3 py-1.5 font-medium text-bp-ink dark:text-slate-200">[3] Broadcasts</a>
+          <a href="#field-logs" class="tactile-btn px-3 py-1.5 font-medium text-bp-ink dark:text-slate-200">[4] Field Logs</a>
+          <a href="#clearance-vault" class="tactile-btn tactile-btn-primary px-3 py-1.5 font-bold flex items-center gap-1.5">
+            <i class="fa-solid fa-lock text-[10px]"></i>
+            <span>[5] Vault (Docs)</span>
+          </a>
+        </nav>
+
+        <!-- Sound Audio FX Toggle & Mobile Button -->
+        <div class="flex items-center gap-2">
+          <button id="sound-toggle-btn" onclick="toggleAudioFX()" class="tactile-btn px-2.5 py-1.5 text-xs font-mono flex items-center gap-1" title="Toggle Mechanical Relay Sound FX">
+            <i id="sound-icon" class="fa-solid fa-volume-high text-bp-forest dark:text-crt-green"></i>
+            <span class="text-[10px] hidden lg:inline font-bold">RELAY AUDIO</span>
+          </button>
+
+          <button id="mobile-menu-toggle" class="md:hidden tactile-btn p-2 text-xs" aria-label="Toggle Navigation Rack">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mobile Drawer Rack -->
+    <div id="mobile-rack" class="hidden md:hidden bg-bp-surface dark:bg-crt-panel border-t border-bp-border dark:border-slate-800 p-4 space-y-2 font-mono text-xs">
+      <a href="#dossier" class="tactile-btn block px-3 py-2 text-bp-ink dark:text-slate-200">[1] OPERATOR DOSSIER</a>
+      <a href="#labs" class="tactile-btn block px-3 py-2 text-bp-ink dark:text-slate-200">[2] TESTBED APPARATUS (LABS)</a>
+      <a href="#multimedia" class="tactile-btn block px-3 py-2 text-bp-ink dark:text-slate-200">[3] MEDIA BROADCASTS (TIKTOK / YT)</a>
+      <a href="#field-logs" class="tactile-btn block px-3 py-2 text-bp-ink dark:text-slate-200">[4] FIELD LOGS (MEDIUM)</a>
+      <a href="#clearance-vault" class="tactile-btn tactile-btn-primary block px-3 py-2 font-bold">[5] CLEARANCE VAULT (SENSITIVE)</a>
+    </div>
+  </header>
+
+  <!-- SECTION 1: Operator Dossier (Hero) & Interactive Unix Teletype -->
+  <section id="dossier" class="py-12 md:py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    
+    <!-- Drafting Crosshair Markers -->
+    <div class="absolute top-4 left-4 font-mono text-xs text-bp-line dark:text-slate-700 select-none">+ 00.12.A</div>
+    <div class="absolute top-4 right-4 font-mono text-xs text-bp-line dark:text-slate-700 select-none">+ 99.88.F</div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Left Column: Editorial Blueprint Brief -->
+      <div class="lg:col-span-7 space-y-6">
+        
+        <!-- Docket Spec Header -->
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-bp-paper dark:bg-slate-900 border border-bp-line dark:border-slate-700 font-mono text-[11px] text-bp-navy dark:text-crt-cyan">
+          <i class="fa-solid fa-stamp text-bp-amber dark:text-crt-amber"></i>
+          <span>DOCKET: #FJ-ENG-NETWORK-SEC //  CLASSIFICATION: UNCLASSIFIED</span>
+        </div>
+
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-bp-navy dark:text-white leading-[1.15] tracking-tight">
+          Systems engineering, <br class="hidden sm:block"/>
+          <span class="italic font-normal text-bp-amber dark:text-crt-amber font-serif">wire protocols</span>, &amp; defensive telemetry.
+        </h1>
+
+        <p class="text-base sm:text-lg text-bp-subtle dark:text-slate-300 leading-relaxed font-serif max-w-2xl">
+          Operating at the confluence of Linux system internals, high-performance routing, encrypted tunnels, and active defensive monitoring. Builder of self-hosted network laboratories and educator deconstructing complexity into transparent schematics.
+        </p>
+
+        <!-- Mechanical Tactile Channels Button Bar -->
+        <div class="pt-2 space-y-2">
+          <div class="font-mono text-[11px] text-bp-subtle dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
+            <span>Transmission Points:</span>
+            <span class="h-px bg-bp-line dark:bg-slate-800 flex-1"></span>
+          </div>
+
+          <div class="flex flex-wrap gap-2.5 font-mono text-xs">
+            <!-- TikTok Dispatch -->
+            <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" class="tactile-btn px-3 py-2 flex items-center gap-2 font-bold text-bp-ink dark:text-slate-200 group" onclick="playClickSound()">
+              <i class="fa-brands fa-tiktok text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform"></i>
+              <span>TikTok / @JokesTech</span>
+            </a>
+
+            <!-- YouTube Dispatch -->
+            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="tactile-btn px-3 py-2 flex items-center gap-2 font-bold text-bp-ink dark:text-slate-200 group" onclick="playClickSound()">
+              <i class="fa-brands fa-youtube text-red-600 dark:text-red-400 group-hover:scale-110 transition-transform"></i>
+              <span>YouTube / Labs</span>
+            </a>
+
+            <!-- Medium Writeups -->
+            <a href="https://medium.com" target="_blank" rel="noopener noreferrer" class="tactile-btn px-3 py-2 flex items-center gap-2 font-bold text-bp-ink dark:text-slate-200 group" onclick="playClickSound()">
+              <i class="fa-brands fa-medium text-emerald-700 dark:text-emerald-400 group-hover:scale-110 transition-transform"></i>
+              <span>Medium Writeups</span>
+            </a>
+
+            <!-- LinkedIn -->
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="tactile-btn px-3 py-2 flex items-center gap-2 font-bold text-bp-ink dark:text-slate-200 group" onclick="playClickSound()">
+              <i class="fa-brands fa-linkedin text-blue-700 dark:text-blue-400 group-hover:scale-110 transition-transform"></i>
+              <span>LinkedIn</span>
+            </a>
+
+            <!-- GitHub -->
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="tactile-btn px-3 py-2 flex items-center gap-2 font-bold text-bp-ink dark:text-slate-200 group" onclick="playClickSound()">
+              <i class="fa-brands fa-github text-slate-800 dark:text-slate-300 group-hover:scale-110 transition-transform"></i>
+              <span>GitHub</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick Spec Matrix -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 font-mono text-[11px]">
+          <div class="p-2.5 bg-bp-paper dark:bg-slate-900 border border-bp-line dark:border-slate-800">
+            <span class="text-bp-subtle dark:text-slate-400 block text-[9px] uppercase">Routing Stack</span>
+            <span class="font-bold text-bp-navy dark:text-white">MikroTik / Cisco</span>
+          </div>
+          <div class="p-2.5 bg-bp-paper dark:bg-slate-900 border border-bp-line dark:border-slate-800">
+            <span class="text-bp-subtle dark:text-slate-400 block text-[9px] uppercase">Crypt Tunnel</span>
+            <span class="font-bold text-bp-navy dark:text-white">WireGuard / IPSec</span>
+          </div>
+          <div class="p-2.5 bg-bp-paper dark:bg-slate-900 border border-bp-line dark:border-slate-800">
+            <span class="text-bp-subtle dark:text-slate-400 block text-[9px] uppercase">Telemetry</span>
+            <span class="font-bold text-bp-navy dark:text-white">Wazuh / Wireshark</span>
+          </div>
+          <div class="p-2.5 bg-bp-paper dark:bg-slate-900 border border-bp-line dark:border-slate-800">
+            <span class="text-bp-subtle dark:text-slate-400 block text-[9px] uppercase">Hypervisors</span>
+            <span class="font-bold text-bp-navy dark:text-white">Proxmox PVE / LXC</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Teletype Command Terminal (UNIX Bourne Shell) -->
+      <div class="lg:col-span-5">
+        <div class="chassis-card rounded-sm overflow-hidden border-2 border-bp-line dark:border-crt-border shadow-2xl">
+          
+          <!-- Screw Rivets on Chassis Corner -->
+          <div class="rivet top-2 left-2"></div>
+          <div class="rivet top-2 right-2"></div>
+
+          <!-- Chassis Terminal Bar -->
+          <div class="bg-bp-surface dark:bg-slate-950 px-4 py-2 border-b-2 border-bp-line dark:border-slate-800 flex items-center justify-between font-mono text-xs text-bp-subtle dark:text-slate-400 select-none">
+            <div class="flex items-center gap-2 pl-4">
+              <span class="w-2.5 h-2.5 rounded-full bg-bp-amber dark:bg-crt-amber inline-block"></span>
+              <span class="font-bold text-bp-ink dark:text-slate-200">TTY: /dev/pts/0 (SPARC-SYSV)</span>
+            </div>
+            <span class="text-[10px]">BAUD: 115200</span>
+          </div>
+
+          <!-- Screen Terminal Screen Body -->
+          <div id="terminal-screen" class="p-4 bg-bp-paper dark:bg-[#070b10] text-bp-ink dark:text-crt-green font-mono text-xs h-80 overflow-y-auto space-y-2.5 crt-scanlines">
+            <div class="text-[11px] leading-relaxed text-bp-subtle dark:text-slate-400">
+              * SUNOS RELEASE 5.11 // INGRESS INITIALIZED<br>
+              * RUNNING LOCAL NODE: jokes-station.lab<br>
+              * ENTER <span class="text-bp-navy dark:text-crt-cyan font-bold cursor-pointer underline" onclick="runTeletype('help')">'help'</span> OR TRY ONE-CLICK TELETYPE BUTTONS.
+            </div>
+
+            <!-- Terminal History Buffer -->
+            <div id="teletype-output" class="space-y-2"></div>
+
+            <!-- Active Prompt Row -->
+            <div class="flex items-center gap-2 pt-1 font-mono text-xs">
+              <span class="text-bp-amber dark:text-crt-amber font-bold">jt-sparc#</span>
+              <input id="terminal-input" type="text" autocomplete="off" spellcheck="false" class="flex-1 bg-transparent text-bp-navy dark:text-crt-cyan focus:outline-none border-none p-0 text-xs font-mono font-semibold" placeholder="type 'help' or 'cat dossier'...">
+              <span class="crt-cursor"></span>
+            </div>
+          </div>
+
+          <!-- Quick Command Operator Console -->
+          <div class="bg-bp-surface dark:bg-slate-900 px-3 py-2 border-t border-bp-line dark:border-slate-800 flex flex-wrap gap-1.5 font-mono text-[10px]">
+            <span class="text-bp-subtle dark:text-slate-500 self-center mr-1 font-bold">RACK CMD:</span>
+            <button onclick="runTeletype('cat dossier')" class="tactile-btn px-2 py-0.5">cat dossier</button>
+            <button onclick="runTeletype('ping labs')" class="tactile-btn px-2 py-0.5">ping labs</button>
+            <button onclick="runTeletype('show clearance')" class="tactile-btn px-2 py-0.5 text-bp-amber dark:text-crt-amber font-bold">show clearance</button>
+            <button onclick="runTeletype('uname -a')" class="tactile-btn px-2 py-0.5">uname -a</button>
+            <button onclick="runTeletype('clear')" class="tactile-btn px-2 py-0.5 text-bp-subtle">clear</button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+    <!-- SECTION 2: Testbed Apparatus (Interactive Web Labs Showcase) -->
+  <section id="labs" class="py-14 bg-bp-surface/50 dark:bg-slate-950/70 border-t-2 border-b-2 border-bp-border dark:border-slate-800 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Technical Header + Tombol Navigasi Slider -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-4 border-b border-bp-line dark:border-slate-800">
+        <div>
+          <div class="flex items-center gap-2 text-bp-amber dark:text-crt-amber font-mono text-xs uppercase tracking-widest mb-1.5 font-bold">
+            <i class="fa-solid fa-server"></i>
+            <span>Module Rack 02 // Functional Apparatus</span>
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-bold text-bp-navy dark:text-white tracking-tight">Active Testbed Environments</h2>
+        </div>
+
+        <!-- Tombol Panah Geser Retro (Kiri & Kanan) -->
+        <div class="flex items-center gap-2 mt-4 md:mt-0 font-mono text-xs">
+          <span class="text-[11px] text-bp-subtle dark:text-slate-400 mr-2 hidden sm:inline">// SCROLL RACK:</span>
+          <button onclick="scrollLabRack(-1)" class="tactile-btn px-3 py-1.5 font-bold text-bp-navy dark:text-crt-cyan" title="Scroll Left">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <button onclick="scrollLabRack(1)" class="tactile-btn px-3 py-1.5 font-bold text-bp-navy dark:text-crt-cyan" title="Scroll Right">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- CAROUSEL TRACK (Bisa di-swipe di HP & di-scroll horizontal) -->
+      <div id="lab-slider" class="flex gap-6 overflow-x-auto pb-6 scroll-smooth snap-x snap-mandatory focus:outline-none">
+
+
+              <!-- KARTU 1: WEB LAB CCNA (lab.jokes.my.id) DENGAN PREVIEW -->
+      <div class="chassis-card rounded-sm p-4 flex flex-col justify-between group flex-shrink-0 w-[310px] sm:w-[350px] snap-start border-2 border-bp-navy dark:border-crt-cyan">
+        <div class="rivet top-2 right-2"></div>
+        
+        <div>
+          <!-- Header Card -->
+          <div class="flex items-center justify-between font-mono text-[11px] mb-2.5 pb-2 border-b border-bp-border dark:border-slate-800">
+            <span class="text-emerald-700 dark:text-crt-green font-bold flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-600 dark:bg-crt-green animate-ping"></span>
+              ONLINE :443
+            </span>
+            <span class="bg-bp-navy dark:bg-crt-cyan text-white dark:text-slate-950 font-bold px-1.5 py-0.5 text-[10px]">FLAGSHIP LAB</span>
+          </div>
+
+          <!-- PREVIEW AREA (Menggunakan Cara 1: Image Mockup) -->
+          <div class="relative w-full h-36 mb-3 rounded border border-bp-line dark:border-slate-800 overflow-hidden bg-black group/preview">
+            <div class="absolute inset-0 crt-scanlines pointer-events-none z-10 opacity-60"></div>
+            <!-- Ganti src dengan path foto screenshot Anda -->
+            <img 
+              src="assets/images/projects/lab-ccna-preview.png" 
+              alt="Preview lab.jokes.my.id" 
+              class="w-full h-full object-cover object-top transition-transform duration-300 group-hover/preview:scale-105"
+              onerror="this.style.display='none'"
+            />
+            <div class="absolute bottom-1.5 left-2 z-20 bg-black/80 border border-emerald-500/40 px-1.5 py-0.5 text-[9px] font-mono text-emerald-400">
+              lab.jokes.my.id
+            </div>
+          </div>
+
+          <!-- Judul & Deskripsi -->
+          <h3 class="font-serif font-bold text-lg text-bp-navy dark:text-white mb-1 group-hover:text-bp-amber dark:group-hover:text-crt-cyan transition-colors">
+            CCNA Packet &amp; Systems Lab
+          </h3>
+          
+          <p class="font-serif text-xs text-bp-subtle dark:text-slate-400 leading-relaxed mb-3">
+            Web simulasi lab jaringan interaktif untuk konfigurasi Cisco Packet Tracer, routing protokol, dan pembedahan topologi.
+          </p>
+
+          <!-- Tech Stack Tags -->
+          <div class="flex flex-wrap gap-1 mb-4 font-mono text-[10px]">
+            <span class="px-2 py-0.5 bg-bp-surface dark:bg-slate-900 border border-bp-line dark:border-slate-800">Cisco CCNA</span>
+            <span class="px-2 py-0.5 bg-bp-surface dark:bg-slate-900 border border-bp-line dark:border-slate-800">Packet Tracer</span>
+            <span class="px-2 py-0.5 bg-bp-surface dark:bg-slate-900 border border-bp-line dark:border-slate-800">Web Lab</span>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <a href="https://lab.jokes.my.id" target="_blank" rel="noopener noreferrer" class="tactile-btn tactile-btn-primary w-full py-2 px-3 font-mono text-xs font-bold flex items-center justify-center gap-2">
+          <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          <span>Launch Live Lab</span>
+        </a>
+      </div>
+
+        <!-- ================= KARTU 1: WEB LAB CCNA (lab.jokes.my.id) ================= -->
+        <div class="chassis-card rounded-sm p-5 flex flex-col justify-between group flex-shrink-0 w-[300px] sm:w-[340px] snap-start border-2 border-bp-navy dark:border-crt-cyan">
+          <div class="rivet top-2 right-2"></div>
+          <div>
+            <!-- Status Port & Live Indicator -->
+            <div class="flex items-center justify-between font-mono text-[11px] mb-3 pb-2 border-b border-bp-border dark:border-slate-800">
+              <span class="text-emerald-700 dark:text-crt-green font-bold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-600 dark:bg-crt-green animate-ping"></span>
+                LIVE :443/HTTPS
+              </span>
+              <span class="bg-bp-navy dark:bg-crt-cyan text-white dark:text-slate-950 font-bold px-1.5 py-0.5 text-[10px]">FLAGSHIP</span>
+            </div>
+
+            <!-- Icon & Sub-Domain Chip -->
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-10 h-10 bg-bp-paper dark:bg-slate-900 border border-bp-line dark:border-slate-800 flex items-center justify-center text-bp-navy dark:text-crt-cyan text-lg shadow-inner">
+                <i class="fa-solid fa-network-wired"></i>
+              </div>
+              <span class="font-mono text-[11px] text-bp-amber dark:text-crt-amber font-semibold">lab.jokes.my.id</span>
+            </div>
+
+            <h3 class="font-serif font-bold text-xl text-bp-navy dark:text-white mb-1.5 group-hover:text-bp-amber dark:group-hover:text-crt-cyan transition-colors">
+              CCNA Packet &amp; Systems Lab
+            </h3>
+            
+            <p class="font-serif text-xs text-bp-subtle dark:text-slate-400 leading-relaxed mb-4">
+              Interactive web laboratory and documentation environment for Cisco Packet Tracer simulations, routing protocols (OSPF, EIGRP), and subnetting practices.
+            </p>
+
+            <div class="flex flex-wrap gap-1 mb-5 font-mono text-[10px]">
+              <span class="px-2 py-0.5 bg-bp-surface dark:bg-slate-900 border border-bp-line dark:border-slate-800">Cisco CCNA</span>
+              <span class="px-2 py-0.5 bg-bp-surface dark:bg-slate-900 border border-bp-line dark:border-slate-800">Packet Tracer</span>
+              <span class="px-2 py-0.5 bg-bp-surface dark:bg-slate-900 border border-bp-line dark:border-slate-800">Web Lab</span>
+            </div>
+          </div>
+
+          <!-- Tombol Aksi: Buka Langsung ke lab.jokes.my.id -->
+          <div class="flex gap-2">
+            <a href="https://lab.jokes.my.id" target="_blank" rel="noopener noreferrer" class="tactile-btn tactile-btn-primary flex-1 py-2 px-3 font-mono text-xs font-bold flex items-center justify-center gap-2">
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+              <span>Launch Web Lab</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- ================= KARTU 2: Network Blueprint Designer ================= -->
+        <div class="chassis-card rounded-sm p-5 flex flex-col justify-between group flex-shrink-0 w-[300px] sm:w-[340px] snap-start">
+          <div class="rivet top-2 right-2"></div>
+          <div>
+            <div class="flex items-center justify-between font-mono text-[11px] mb-3 pb-2 border-b border-bp-border dark:border-slate-800">
+              <span class="text-emerald-700 dark:text-crt-green font-bold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-600 dark:bg-crt-green"></span>
+                PORT :5050/TCP
+              </span>
+              <span class="bg-bp-paper dark:bg-slate-900 px-1.5 py-0.5 border border-bp-line dark:border-slate-800 text-[10px] text-bp-subtle dark:text-slate-400">APPARATUS</span>
+            </div>
+
+            <div class="w-10 h-10 bg-bp-paper dark:bg-slate-900 border border-bp-line dark:border-slate-800 flex items-center justify-center text-bp-navy dark:text-crt-cyan text-lg mb-3 shadow-inner">
+              <i class="fa-solid fa-diagram-project"></i>
+            </div>
+
+            <h3 class="font-serif font-bold text-xl text-bp-navy dark:text-white mb-1.5 group-hover:text-bp-amber dark:group-hover:text-crt-cyan transition-colors">
+              Network Blueprint Designer
+            </h3>
+            
+            <p class="font-serif text-xs text-bp-subtle dark:text-slate-400 leading-relaxed mb-4">
+              Tactile browser topology sketching engine with CIDR subnet calculation, 802.1Q VLAN matrix validation, and Cisco IOS export.
+            </p>
+
+            <div class="flex flex-wrap gap-1 mb-5 font-mono text-[10px]">
+              <span class="px-2 py-0.5 bg-bp-surface dark:bg-slate-900 border border-bp-line dark:border-slate-800">Docker</span>
+              <span class="px-2 py-0.5 bg-bp-surface dark:bg-slate-900 border border-bp-line dark:border-slate-800">Canvas 2D</span>
+              <span class="px-2 py-0.5 bg-bp-surface dark:bg-slate-900 border border-bp-line dark:border-slate-800">Nginx</span>
+            </div>
+          </div>
+
+          <button onclick="openApparatusModal('Network Blueprint Designer', 'PORT: 5050 // TCP', 'ACTIVE_ROUTED', 'A full-fidelity interactive canvas allowing network administrators to draft topologies and calculate CIDR blocks.', 'https://github.com', ['Zero-latency canvas engine', '802.1Q VLAN matrix', 'RouterOS script exporter'])" class="tactile-btn w-full py-2 px-3 font-mono text-xs font-bold text-bp-navy dark:text-crt-cyan flex items-center justify-center gap-2">
+            <i class="fa-solid fa-terminal text-[10px]"></i>
+            <span>Inspect Module</span>
+          </button>
+        </div>
+
+        <!-- ================= KARTU 3: WireGuard Multi-Mesh Node ================= -->
+        <div class="chassis-card rounded-sm p-5 flex flex-col justify-between group flex-shrink-0 w-[300px] sm:w-[340px] snap-start">
+          <div class="rivet top-2 right-2"></div>
+          <div>
+            <div class="flex items-center justify-between font-mono text-[11px] mb-3 pb-2 border-b border-bp-border dark:border-slate-800">
+              <span class="text-emerald-700 dark:text-crt-green font-bold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-600 dark:bg-crt-green"></span>
+                PORT :51820/UDP
+              </span>
+              <span class="bg-bp-paper dark:bg-slate-900 px-1.5 py-0.5 border border-bp-line dark:border-slate-800 text-[10px] text-bp-subtle dark:text-slate-400">TUNNEL</span>
+            </div>
+
+            <div class="w-10 h-10 bg-bp-paper dark:bg-slate-900 border border-bp-line dark:border-slate-800 flex items-center justify-center text-bp-forest dark:text-crt-green text-lg mb-3 shadow-inner">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+
+            <h3 class="font-serif font-bold text-xl text-bp-navy dark:text-white mb-1.5 group-hover:text-bp-amber dark:group-hover:text-crt-green transition-colors">
+              WireGuard Multi-Mesh Node
+            </h3>
+            
+            <p class="font-serif text-xs text-bp-subtle dark:text-slate-400 leading-relaxed mb-4">
+              Cryptographic hub linking remote VPS and edge nodes to a central MikroTik core router with ChaCha20-Poly1305 keepalive.
+            </p>
+
+            <div class="flex flex-wrap gap-1 mb-5 font-mono text-[10px]">
+              <span class="px-2 py-0.5 bg-bp-surface dark:bg-slate-900 border border-bp-line dark:border-slate-800">WireGuard</span>
+              <span class="px-2 py-0.5 bg-bp-surface dark:bg-slate-900 border border-bp-line dark:border-slate-800">RouterOS v7</span>
+              <span class="px-2 py-0.5 bg-bp-surface dark:bg-slate-900 border border-bp-line dark:border-slate-800">Full Mesh</span>
+            </div>
+          </div>
+
+          <button onclick="openApparatusModal('WireGuard Multi-Mesh Node', 'PORT: 51820 // UDP', 'ACTIVE_TUNNEL', 'Automated mesh topology linking disparate VPS nodes.', 'https://github.com', ['ChaCha20-Poly1305 encryption', 'Sub-millisecond baseline', 'Watchdog keepalive'])" class="tactile-btn w-full py-2 px-3 font-mono text-xs font-bold text-bp-forest dark:text-crt-green flex items-center justify-center gap-2">
+            <i class="fa-solid fa-key text-[10px]"></i>
+            <span>Inspect Module</span>
+          </button>
+        </div>
+
+        <!-- ================= KARTU 4: Wazuh SIEM Security Aggregator ================= -->
+        <div class="chassis-card rounded-sm p-5 flex flex-col justify-between group flex-shrink-0 w-[300px] sm:w-[340px] snap-start">
+          <div class="rivet top-2 right-2"></div>
+          <div>
+            <div class="flex items-center justify-between font-mono text-[11px] mb-3 pb-2 border-b border-bp-border dark:border-slate-800">
+              <span class="text-amber-700 dark:text-crt-amber font-bold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-amber-600 dark:bg-crt-amber animate-pulse"></span>
+                PORT :1514/TCP
+              </span>
+              <span class="bg-bp-paper dark:bg-slate-900 px-1.5 py-0.5 border border-bp-line dark:border-slate-800 text-[10px] text-bp-subtle dark:text-slate-400">SIEM</span>
+            </div>
+
+            <div class="w-10 h-10 bg-bp-paper dark:bg-slate-900 border border-bp-line dark:border-slate-800 flex items-center justify-center text-bp-amber dark:text-crt-amber text-lg mb-3 shadow-inner">
+              <i class="fa-solid fa-radar text-base"></i>
+            </div>
+
+            <h3 class="font-serif font-bold text-xl text-bp-navy dark:text-white mb-1.5 group-hover:text-bp-amber dark:group-hover:text-crt-amber transition-colors">
+              Wazuh SIEM Security Aggregator
+            </h3>
+            
+            <p class="font-serif text-xs text-bp-subtle dark:text-slate-400 leading-relaxed mb-4">
+              Real-time threat detection, file integrity tracking (FIM), and syslog aggregator correlating root escalations across homelab VMs.
+            </p>
+
+            <div class="flex flex-wrap gap-1 mb-5 font-mono text-[10px]">
+              <span class="px-2 py-0.5 bg-bp-surface dark:bg-slate-900 border border-bp-line dark:border-slate-800">Wazuh Core</span>
+              <span class="px-2 py-0.5 bg-bp-surface dark:bg-slate-900 border border-bp-line dark:border-slate-800">Syslog-ng</span>
+              <span class="px-2 py-0.5 bg-bp-surface dark:bg-slate-900 border border-bp-line dark:border-slate-800">FIM Agent</span>
+            </div>
+          </div>
+
+          <button onclick="openApparatusModal('Wazuh SIEM Security Aggregator', 'PORT: 1514 // TCP', 'ACTIVE_MONITORING', 'Centralized threat telemetry pipeline.', 'https://github.com', ['MITRE ATT&CK framework', 'Real-time mitigation', 'Active response triggers'])" class="tactile-btn w-full py-2 px-3 font-mono text-xs font-bold text-bp-amber dark:text-crt-amber flex items-center justify-center gap-2">
+            <i class="fa-solid fa-chart-line text-[10px]"></i>
+            <span>Inspect Module</span>
+          </button>
+        </div>
+
+        <!-- Anda bisa menambahkan kartu lab ke-5, ke-6, dan seterusnya di sini tanpa merusak tata letak -->
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECTION 3: Creator Channels & Video Field Transmissions (TikTok & YouTube) -->
+  <section id="multimedia" class="py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-3 border-b border-bp-line dark:border-slate-800">
+      <div>
+        <div class="flex items-center gap-2 text-rose-700 dark:text-rose-400 font-mono text-xs uppercase tracking-widest mb-1.5 font-bold">
+          <i class="fa-solid fa-tower-broadcast"></i>
+          <span>Educational Transmissions // TikTok &amp; YouTube</span>
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-bold text-bp-navy dark:text-white tracking-tight">Audio-Visual Field Dispatches</h2>
+      </div>
+
+      <div class="flex items-center gap-3 mt-4 md:mt-0 font-mono text-xs">
+        <a href="https://tiktok.com" target="_blank" class="tactile-btn px-3 py-1.5 flex items-center gap-1.5 text-rose-700 dark:text-rose-400 font-bold">
+          <i class="fa-brands fa-tiktok"></i> @JokesTech
+        </a>
+        <a href="https://youtube.com" target="_blank" class="tactile-btn px-3 py-1.5 flex items-center gap-1.5 text-red-700 dark:text-red-400 font-bold">
+          <i class="fa-brands fa-youtube"></i> YouTube Lab
+        </a>
+      </div>
+    </div>
+
+    <!-- Retro Workstation CRT Media Monitor Deck -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+      
+      <!-- Interactive CRT Broadcast Monitor (Left 7 Cols) -->
+      <div class="lg:col-span-7 chassis-card p-6 flex flex-col justify-between border-2 border-bp-line dark:border-crt-border">
+        <div class="rivet top-3 left-3"></div>
+        <div class="rivet top-3 right-3"></div>
+
+        <div>
+          <!-- CRT Monitor Top Label -->
+          <div class="flex items-center justify-between font-mono text-xs text-bp-subtle dark:text-slate-400 pb-3 mb-3 border-b border-bp-border dark:border-slate-800">
+            <span class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse"></span>
+              <span class="font-bold text-bp-ink dark:text-white uppercase tracking-wider" id="active-video-channel">FEED: CH-01 // TIKTOK NETWORKING</span>
+            </span>
+            <span class="bg-bp-surface dark:bg-slate-900 px-2 py-0.5 border border-bp-line dark:border-slate-800 text-[10px]">NTSC 4:3 CALIBRATED</span>
+          </div>
+
+          <!-- Video Screen Simulation Area -->
+          <div class="relative bg-slate-950 rounded border-2 border-slate-700 dark:border-slate-800 overflow-hidden shadow-2xl p-6 min-h-[260px] flex flex-col justify-between crt-scanlines">
+            
+            <!-- Video Overlay Badge -->
+            <div class="flex items-center justify-between text-crt-amber font-mono text-[11px] z-10">
+              <span id="screen-badge" class="px-2 py-0.5 bg-black/60 border border-crt-amber/40">TIKTOK TRANSMISSION</span>
+              <span id="screen-time" class="text-crt-green">REC ● 02:45 / 03:00</span>
+            </div>
+
+            <!-- Central Content Display -->
+            <div class="my-6 z-10 space-y-2">
+              <div class="font-mono text-xs text-crt-cyan tracking-wider uppercase" id="screen-tag">#NETWORKING #VLAN #SYSADMIN</div>
+              <h3 class="font-serif text-2xl font-bold text-white leading-tight" id="screen-title">
+                Cara Kerja VLAN Tagging 802.1Q di Switch Cisco &amp; MikroTik Trunk
+              </h3>
+              <p class="font-mono text-xs text-slate-300 max-w-xl leading-relaxed" id="screen-desc">
+                Simulasi paket Ethernet frame asli menunjukkan bagaimana 4-byte 802.1Q header disuntikkan di antara MAC address dan EtherType saat melintasi port trunk.
+              </p>
+            </div>
+
+            <!-- Video Player Controls / Action -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-800 z-10 font-mono text-xs">
+              <div class="flex items-center gap-2 text-slate-400 text-[11px]">
+                <i class="fa-solid fa-signal text-crt-green"></i>
+                <span id="screen-stats">14.8K Views • 1.9K Likes • 240 Shares</span>
+              </div>
+              <a id="screen-link" href="https://tiktok.com" target="_blank" class="tactile-btn tactile-btn-primary px-3 py-1.5 font-bold flex items-center gap-2 text-xs">
+                <i class="fa-solid fa-play text-[10px]"></i>
+                <span id="screen-btn-text">Watch on TikTok</span>
+              </a>
+            </div>
+
+            <!-- Background Raster Graphic Representation -->
+            <div class="absolute inset-0 opacity-10 flex items-center justify-center pointer-events-none font-mono text-8xl text-white font-black select-none">
+              JOKESTECH
+            </div>
+          </div>
+        </div>
+
+        <!-- Channel Tuning Selector Knobs -->
+        <div class="mt-4 pt-3 border-t border-bp-line dark:border-slate-800 font-mono text-xs">
+          <div class="text-[10px] text-bp-subtle dark:text-slate-400 uppercase tracking-wider mb-2 font-bold">// Switch Transmission Channel:</div>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="tuneChannel(0)" class="tactile-btn py-1.5 px-2 text-[11px] font-bold text-left channel-btn active">
+              1. VLAN 802.1Q
+            </button>
+            <button onclick="tuneChannel(1)" class="tactile-btn py-1.5 px-2 text-[11px] font-bold text-left channel-btn">
+              2. WireGuard MTU
+            </button>
+            <button onclick="tuneChannel(2)" class="tactile-btn py-1.5 px-2 text-[11px] font-bold text-left channel-btn">
+              3. Wireshark PCAP
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Feed Catalog & Channel Highlights (Right 5 Cols) -->
+      <div class="lg:col-span-5 space-y-4">
+        
+        <!-- Video Card 1 -->
+        <div onclick="tuneChannel(0)" class="chassis-card p-4 cursor-pointer hover:border-bp-navy dark:hover:border-crt-cyan transition-all border border-bp-line dark:border-slate-800">
+          <div class="flex items-start justify-between font-mono text-[11px] mb-1">
+            <span class="text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1.5">
+              <i class="fa-brands fa-tiktok"></i> TikTok Short
+            </span>
+            <span class="text-bp-subtle dark:text-slate-400">01:45</span>
+          </div>
+          <h4 class="font-serif font-bold text-base text-bp-navy dark:text-white mb-1">
+            Cara Kerja VLAN Tagging 802.1Q Trunk
+          </h4>
+          <p class="font-serif text-xs text-bp-subtle dark:text-slate-400 leading-snug">
+            Visualisasi pembedahan frame Ethernet dan kalkulasi MTU overhead 4-byte pada frame trunking.
+          </p>
+        </div>
+
+        <!-- Video Card 2 -->
+        <div onclick="tuneChannel(1)" class="chassis-card p-4 cursor-pointer hover:border-bp-navy dark:hover:border-crt-cyan transition-all border border-bp-line dark:border-slate-800">
+          <div class="flex items-start justify-between font-mono text-[11px] mb-1">
+            <span class="text-red-600 dark:text-red-400 font-bold flex items-center gap-1.5">
+              <i class="fa-brands fa-youtube"></i> YouTube Lab
+            </span>
+            <span class="text-bp-subtle dark:text-slate-400">14:20</span>
+          </div>
+          <h4 class="font-serif font-bold text-base text-bp-navy dark:text-white mb-1">
+            Troubleshooting WireGuard MTU &amp; MSS Clamping
+          </h4>
+          <p class="font-serif text-xs text-bp-subtle dark:text-slate-400 leading-snug">
+            Mengapa VPN sering macet saat buka HTTPS dan cara mengatasi packet drop dengan iptables TCPMSS mangle.
+          </p>
+        </div>
+
+        <!-- Video Card 3 -->
+        <div onclick="tuneChannel(2)" class="chassis-card p-4 cursor-pointer hover:border-bp-navy dark:hover:border-crt-cyan transition-all border border-bp-line dark:border-slate-800">
+          <div class="flex items-start justify-between font-mono text-[11px] mb-1">
+            <span class="text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1.5">
+              <i class="fa-brands fa-tiktok"></i> TikTok Deep Dive
+            </span>
+            <span class="text-bp-subtle dark:text-slate-400">02:50</span>
+          </div>
+          <h4 class="font-serif font-bold text-base text-bp-navy dark:text-white mb-1">
+            Analisis Paket Wireshark: Deteksi Port Scanning
+          </h4>
+          <p class="font-serif text-xs text-bp-subtle dark:text-slate-400 leading-snug">
+            Membedakan traffic SYN-Stealth scan nmap dengan koneksi sah melalui filter TCP flags dan window sizing.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECTION 4: Technical Field Logs & Medium Publications -->
+  <section id="field-logs" class="py-14 bg-bp-surface/40 dark:bg-slate-950/40 border-t-2 border-bp-border dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-3 border-b border-bp-line dark:border-slate-800">
+        <div>
+          <div class="flex items-center gap-2 text-bp-navy dark:text-crt-cyan font-mono text-xs uppercase tracking-widest mb-1 font-bold">
+            <i class="fa-solid fa-scroll"></i>
+            <span>Registry 04 // Field Reports &amp; Dispatches</span>
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-bold text-bp-navy dark:text-white tracking-tight">Medium Articles &amp; CTF Writeups</h2>
+        </div>
+        <a href="https://medium.com" target="_blank" class="mt-2 md:mt-0 font-mono text-xs font-bold text-bp-amber dark:text-crt-amber hover:underline flex items-center gap-1.5">
+          <span>Inspect Full Medium Archive</span>
+          <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+        </a>
+      </div>
+
+      <!-- Docket Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <!-- Field Log 1 -->
+        <div class="chassis-card p-6 flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between font-mono text-[11px] text-bp-subtle dark:text-slate-400 pb-2 mb-3 border-b border-bp-border dark:border-slate-800">
+              <span class="text-bp-navy dark:text-crt-cyan font-bold">#DOC-NET-01</span>
+              <span>8 MIN READ</span>
+            </div>
+            
+            <span class="font-mono text-[10px] uppercase tracking-wider text-bp-amber dark:text-crt-amber font-bold block mb-1">Architecture Analysis</span>
+            <h3 class="font-serif font-bold text-xl text-bp-navy dark:text-white mb-2 group-hover:text-bp-amber dark:group-hover:text-crt-cyan transition-colors">
+              Dissecting WireGuard Handshakes: Cryptographic Precision in Wireshark
+            </h3>
+            
+            <p class="font-serif text-xs text-bp-subtle dark:text-slate-400 leading-relaxed mb-4">
+              Step-by-step cryptographic tracing of Curve25519 diffie-hellman key exchanges, replay counter protection, and resolving PPPoE MTU fragmentation across upstream carriers.
+            </p>
+          </div>
+
+          <div class="pt-3 border-t border-bp-line dark:border-slate-800 flex items-center justify-between font-mono text-[11px]">
+            <span class="text-bp-subtle dark:text-slate-500">Medium.com</span>
+            <a href="https://medium.com" target="_blank" class="text-bp-navy dark:text-crt-cyan font-bold hover:underline flex items-center gap-1" onclick="playClickSound()">
+              <span>Read Writeup</span>
+              <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Field Log 2 -->
+        <div class="chassis-card p-6 flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between font-mono text-[11px] text-bp-subtle dark:text-slate-400 pb-2 mb-3 border-b border-bp-border dark:border-slate-800">
+              <span class="text-emerald-700 dark:text-crt-green font-bold">#DOC-SEC-09</span>
+              <span>12 MIN READ</span>
+            </div>
+            
+            <span class="font-mono text-[10px] uppercase tracking-wider text-emerald-700 dark:text-crt-green font-bold block mb-1">CTF Forensics</span>
+            <h3 class="font-serif font-bold text-xl text-bp-navy dark:text-white mb-2 group-hover:text-emerald-700 dark:group-hover:text-crt-green transition-colors">
+              PicoCTF Network Walkthrough: Packet Carving &amp; Covert ICMP Tunnels
+            </h3>
+            
+            <p class="font-serif text-xs text-bp-subtle dark:text-slate-400 leading-relaxed mb-4">
+              Extracting XOR-obfuscated ELF payloads injected into echo ping request packets using `tshark`, custom Python unpackers, and binwalk signature offsets.
+            </p>
+          </div>
+
+          <div class="pt-3 border-t border-bp-line dark:border-slate-800 flex items-center justify-between font-mono text-[11px]">
+            <span class="text-bp-subtle dark:text-slate-500">Medium.com</span>
+            <a href="https://medium.com" target="_blank" class="text-emerald-700 dark:text-crt-green font-bold hover:underline flex items-center gap-1" onclick="playClickSound()">
+              <span>Read Writeup</span>
+              <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Field Log 3 -->
+        <div class="chassis-card p-6 flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between font-mono text-[11px] text-bp-subtle dark:text-slate-400 pb-2 mb-3 border-b border-bp-border dark:border-slate-800">
+              <span class="text-amber-700 dark:text-crt-amber font-bold">#DOC-SYS-14</span>
+              <span>10 MIN READ</span>
+            </div>
+            
+            <span class="font-mono text-[10px] uppercase tracking-wider text-amber-700 dark:text-crt-amber font-bold block mb-1">Homelab Automation</span>
+            <h3 class="font-serif font-bold text-xl text-bp-navy dark:text-white mb-2 group-hover:text-amber-700 dark:group-hover:text-crt-amber transition-colors">
+              Zero-Trust Reverse Ingress via Cloudflare &amp; Proxmox LXC Hardening
+            </h3>
+            
+            <p class="font-serif text-xs text-bp-subtle dark:text-slate-400 leading-relaxed mb-4">
+              Building an un-routable private subnet environment exposing homelab web applications without opening a single router port or exposing WAN IP addresses.
+            </p>
+          </div>
+
+          <div class="pt-3 border-t border-bp-line dark:border-slate-800 flex items-center justify-between font-mono text-[11px]">
+            <span class="text-bp-subtle dark:text-slate-500">Medium.com</span>
+            <a href="https://medium.com" target="_blank" class="text-amber-700 dark:text-crt-amber font-bold hover:underline flex items-center gap-1" onclick="playClickSound()">
+              <span>Read Writeup</span>
+              <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECTION 5: Tier-2 Restricted Clearance Archive (Certificates & Sensitive Docs Gate) -->
+  <!-- SECTION 5: Official Certifications & Credentials -->
+  <section id="credentials" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="chassis-card p-6 sm:p-8 border-2 border-bp-navy dark:border-crt-cyan shadow-2xl relative">
+      
+      <!-- Screw Rivets -->
+      <div class="rivet top-3 left-3"></div>
+      <div class="rivet top-3 right-3"></div>
+      <div class="rivet bottom-3 left-3"></div>
+      <div class="rivet bottom-3 right-3"></div>
+
+      <!-- Header Section -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b-2 border-bp-line dark:border-slate-800 gap-4">
+        <div>
+          <div class="flex items-center gap-2 font-mono text-xs text-bp-navy dark:text-crt-cyan font-bold uppercase tracking-widest">
+            <i class="fa-solid fa-certificate"></i>
+            <span>ACCREDITED REGISTRY // TIER-1 CREDENTIALS</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-bp-navy dark:text-white mt-1">
+            Certifications &amp; Qualifications
+          </h2>
+        </div>
+        
+        <!-- Tombol Langsung Unduh Resume/CV -->
+        <a href="assets/docs/Resume.pdf" download class="tactile-btn tactile-btn-primary px-4 py-2 font-mono text-xs font-bold flex items-center gap-2 self-start sm:self-auto">
+          <i class="fa-solid fa-file-pdf"></i>
+          <span>Download Full Curriculum Vitae</span>
+        </a>
+      </div>
+
+      <!-- Grid Sertifikat Terbuka -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
+        
+        <!-- Kartu Sertifikat 1 -->
+        <div class="chassis-card p-4 border border-bp-line dark:border-slate-800 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between text-[10px] text-bp-subtle dark:text-slate-400 mb-2">
+              <span>MIKROTIK ACADEMY</span>
+              <span class="text-emerald-700 dark:text-crt-green font-bold">VERIFIED</span>
+            </div>
+            <h4 class="font-serif font-bold text-base text-bp-navy dark:text-white mb-1">
+              MikroTik Certified Network Associate (MTCNA)
+            </h4>
+            <p class="font-serif text-xs text-bp-subtle dark:text-slate-400 mb-3">
+              Validasi routing dinamis, bandwidth management/QoS, firewall filtering, dan tunneling.
+            </p>
+          </div>
+          <button onclick="openDocPreview('MikroTik Certified Network Associate', 'MTCNA-CERT', 'Validasi kompetensi RouterOS engineering.')" class="tactile-btn w-full py-1.5 font-bold text-[11px] mt-2">
+            <i class="fa-solid fa-eye mr-1"></i> View Credential
+          </button>
+        </div>
+
+        <!-- Kartu Sertifikat 2 -->
+        <div class="chassis-card p-4 border border-bp-line dark:border-slate-800 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between text-[10px] text-bp-subtle dark:text-slate-400 mb-2">
+              <span>CISCO NETWORKING</span>
+              <span class="text-emerald-700 dark:text-crt-green font-bold">ACCREDITED</span>
+            </div>
+            <h4 class="font-serif font-bold text-base text-bp-navy dark:text-white mb-1">
+              Enterprise Routing &amp; Switching
+            </h4>
+            <p class="font-serif text-xs text-bp-subtle dark:text-slate-400 mb-3">
+              Kompetensi konfigurasi VLAN, OSPF multi-area, EtherChannel, dan defensive switch port security.
+            </p>
+          </div>
+          <button onclick="openDocPreview('Enterprise Routing & Switching', 'CISCO-CERT', 'Validasi kompetensi Cisco IOS & switching.')" class="tactile-btn w-full py-1.5 font-bold text-[11px] mt-2">
+            <i class="fa-solid fa-eye mr-1"></i> View Credential
+          </button>
+        </div>
+
+        <!-- Kartu Sertifikat 3 -->
+        <div class="chassis-card p-4 border border-bp-line dark:border-slate-800 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between text-[10px] text-bp-subtle dark:text-slate-400 mb-2">
+              <span>CYBERSECURITY LAB</span>
+              <span class="text-bp-amber dark:text-crt-amber font-bold">COMPLETED</span>
+            </div>
+            <h4 class="font-serif font-bold text-base text-bp-navy dark:text-white mb-1">
+              Blue Team &amp; Network Defense
+            </h4>
+            <p class="font-serif text-xs text-bp-subtle dark:text-slate-400 mb-3">
+              Analisis log telemetri Wazuh SIEM, packet carving Wireshark, dan mitigasi brute-force.
+            </p>
+          </div>
+          <button onclick="openDocPreview('Blue Team & Network Defense', 'SEC-CERT', 'Penyelesaian praktikum analisis telemetri SIEM & Wireshark.')" class="tactile-btn w-full py-1.5 font-bold text-[11px] mt-2">
+            <i class="fa-solid fa-eye mr-1"></i> View Credential
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+  <!-- Footer Instrumentation & PGP Dispatch Box -->
+  <footer class="w-full bg-bp-surface dark:bg-slate-950 border-t-2 border-bp-border dark:border-slate-800 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8 pb-8 border-b border-bp-line dark:border-slate-800">
+        
+        <!-- Left: Station Callout -->
+        <div class="md:col-span-5 space-y-3">
+          <div class="flex items-center gap-2 font-mono text-xs font-bold text-bp-navy dark:text-crt-cyan">
+            <span class="w-2.5 h-2.5 rounded-full bg-bp-amber dark:bg-crt-amber"></span>
+            <span>JOKESTECH SYSTEM APPARATUS</span>
+          </div>
+          <p class="font-serif text-sm text-bp-subtle dark:text-slate-400 max-w-sm leading-relaxed">
+            Constructed with retro-industrial precision. Designed for deployment on Cloudflare Edge Pages with zero tracking overhead and hardened security boundaries.
+          </p>
+          <div class="font-mono text-xs text-bp-subtle dark:text-slate-500">
+            OPERATING ENVIRONMENT: KALIMANTAN TIMUR, INDONESIA [UTC+8]
+          </div>
+        </div>
+
+        <!-- Center: Quick Telemetry Copy Contact -->
+        <div class="md:col-span-4 space-y-2 font-mono text-xs">
+          <div class="text-bp-subtle dark:text-slate-400 uppercase text-[10px] tracking-wider font-bold">
+            // Direct Encrypted Comm Channel
+          </div>
+          
+          <div class="bg-bp-paper dark:bg-slate-900 p-3 border border-bp-line dark:border-slate-800 flex items-center justify-between">
+            <span class="font-bold text-bp-navy dark:text-crt-green select-all">contact@jokestech.lab</span>
+            <button onclick="copyContact('contact@jokestech.lab')" class="tactile-btn px-2.5 py-1 text-[10px] font-bold">
+              <i class="fa-regular fa-copy mr-1"></i> COPY
+            </button>
+          </div>
+
+          <p class="font-serif text-xs text-bp-subtle dark:text-slate-400">
+            Open to technical infrastructure consultations, homelab research collaborations, and enterprise networking dispatches.
+          </p>
+        </div>
+
+        <!-- Right: Social Transmission Array -->
+        <div class="md:col-span-3 space-y-2 font-mono text-xs">
+          <div class="text-bp-subtle dark:text-slate-400 uppercase text-[10px] tracking-wider font-bold">
+            // Active Feeds
+          </div>
+          <div class="flex flex-col space-y-1.5">
+            <a href="https://tiktok.com" target="_blank" class="hover:text-rose-600 dark:hover:text-rose-400 transition-colors flex items-center gap-2">
+              <i class="fa-brands fa-tiktok text-xs"></i> TikTok @JokesTech
+            </a>
+            <a href="https://youtube.com" target="_blank" class="hover:text-red-600 dark:hover:text-red-400 transition-colors flex items-center gap-2">
+              <i class="fa-brands fa-youtube text-xs"></i> YouTube Channel
+            </a>
+            <a href="https://medium.com" target="_blank" class="hover:text-emerald-700 dark:hover:text-crt-green transition-colors flex items-center gap-2">
+              <i class="fa-brands fa-medium text-xs"></i> Medium Technical Logs
+            </a>
+            <a href="https://github.com" target="_blank" class="hover:text-bp-navy dark:hover:text-white transition-colors flex items-center gap-2">
+              <i class="fa-brands fa-github text-xs"></i> GitHub Repositories
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Chassis Metrics -->
+      <div class="pt-6 flex flex-col sm:flex-row items-center justify-between font-mono text-xs text-bp-subtle dark:text-slate-500 gap-3">
+        <div class="flex items-center gap-3">
+          <span>UPTIME: <span id="telemetry-uptime" class="font-bold text-bp-navy dark:text-slate-300">312d 14h 08m</span></span>
+          <span>•</span>
+          <span>LOAD AVG: 0.14, 0.08, 0.02</span>
+        </div>
+        <div>
+          <span>PRODUCED IN SINGLE-FILE ARCHITECTURE // CLOUDFLARE EDGE READY</span>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- Modal 1: Testbed Apparatus Inspection Modal -->
+  <div id="apparatus-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs hidden opacity-0 transition-opacity duration-200">
+    <div class="chassis-card rounded-none max-w-2xl w-full border-2 border-bp-navy dark:border-crt-cyan p-6 shadow-2xl relative">
+      <div class="rivet top-3 left-3"></div>
+      <div class="rivet top-3 right-3"></div>
+      
+      <!-- Close Button -->
+      <button onclick="closeApparatusModal()" class="absolute top-4 right-4 tactile-btn px-2 py-1 text-xs">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 bg-bp-navy dark:bg-slate-900 border border-bp-line dark:border-crt-cyan text-white dark:text-crt-cyan flex items-center justify-center text-lg">
+          <i class="fa-solid fa-microchip"></i>
+        </div>
+        <div>
+          <h3 id="modal-app-title" class="font-serif font-bold text-xl text-bp-navy dark:text-white">Apparatus Name</h3>
+          <div class="font-mono text-xs text-bp-subtle dark:text-slate-400 flex items-center gap-2">
+            <span id="modal-app-port" class="text-bp-amber dark:text-crt-amber font-bold">PORT: 5050</span>
+            <span>•</span>
+            <span id="modal-app-status" class="text-emerald-700 dark:text-crt-green font-bold">ONLINE</span>
+          </div>
+        </div>
+      </div>
+
+      <p id="modal-app-desc" class="font-serif text-sm text-bp-subtle dark:text-slate-300 leading-relaxed mb-4">
+        Detailed technical description of this lab node.
+      </p>
+
+      <div class="bg-bp-paper dark:bg-slate-950 p-4 border border-bp-line dark:border-slate-800 mb-5 font-mono text-xs">
+        <div class="text-[10px] text-bp-subtle dark:text-slate-500 uppercase tracking-widest font-bold mb-2">// Apparatus Capabilities</div>
+        <ul id="modal-app-features" class="space-y-1.5 text-bp-ink dark:text-slate-200">
+          <!-- Dynamically populated -->
+        </ul>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 font-mono text-xs">
+        <button onclick="closeApparatusModal()" class="tactile-btn px-4 py-2 font-bold">
+          Close Window
+        </button>
+        <button onclick="triggerSimulateLab()" class="tactile-btn tactile-btn-primary px-4 py-2 font-bold flex items-center gap-1.5">
+          <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          <span>Launch Telemetry Probe</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Declassified Document Preview Modal -->
+  <div id="doc-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs hidden opacity-0 transition-opacity duration-200">
+    <div class="chassis-card max-w-xl w-full border-2 border-bp-navy dark:border-crt-cyan p-6 shadow-2xl relative">
+      <div class="rivet top-3 left-3"></div>
+      <div class="rivet top-3 right-3"></div>
+
+      <button onclick="closeDocModal()" class="absolute top-4 right-4 tactile-btn px-2 py-1 text-xs">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="font-mono text-xs text-bp-crimson dark:text-crt-amber font-bold uppercase tracking-widest mb-1">
+        // DECLASSIFIED VERIFICATION RECORD
+      </div>
+      <h3 id="doc-modal-title" class="font-serif font-bold text-2xl text-bp-navy dark:text-white mb-2">Document Title</h3>
+      
+      <div class="bg-bp-paper dark:bg-slate-950 p-4 border-2 border-bp-line dark:border-slate-800 font-mono text-xs space-y-2 my-4">
+        <div class="flex justify-between border-b border-bp-line dark:border-slate-800 pb-1 text-[11px]">
+          <span>RECORD TYPE: ACCREDITED QUALIFICATION</span>
+          <span class="text-emerald-700 dark:text-crt-green font-bold">VALIDATED</span>
+        </div>
+        <div id="doc-modal-body" class="font-serif text-sm text-bp-subtle dark:text-slate-300 py-2 leading-relaxed">
+          Detailed documentation metadata.
+        </div>
+        <div class="p-2 bg-bp-surface dark:bg-slate-900 border border-bp-line dark:border-slate-800 text-[10px] space-y-1">
+          <div>ISSUED TO: <span class="font-bold">JOKESTECH INFRASTRUCTURE</span></div>
+          <div>PRIVACY CLEARANCE: TIER-2 RESTRICTED (PII FILTER ACTIVE)</div>
+          <div>HASH DIGEST: <span class="font-mono">SHA256:7e8a91c4b220391d8...</span></div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 font-mono text-xs">
+        <button onclick="closeDocModal()" class="tactile-btn px-4 py-2 font-bold">
+          Close Docket
+        </button>
+        <button onclick="copyContact('contact@jokestech.lab'); closeDocModal();" class="tactile-btn tactile-btn-primary px-4 py-2 font-bold">
+          Request Unredacted PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script src="js/main.js"></script>
+
+</body>
+</html>

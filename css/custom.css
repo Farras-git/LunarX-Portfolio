@@ -1,0 +1,227 @@
+    /* Technical Drafting Grid Pattern */
+    .drafting-grid {
+      background-size: 24px 24px;
+      background-image:
+        linear-gradient(to right, rgba(184, 169, 148, 0.25) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(184, 169, 148, 0.25) 1px, transparent 1px);
+    }
+    .dark .drafting-grid {
+      background-size: 24px 24px;
+      background-image:
+        linear-gradient(to right, rgba(56, 189, 248, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(56, 189, 248, 0.08) 1px, transparent 1px);
+    }
+
+    /* Millimeter Ruler Border Pattern */
+    .ruler-top {
+      background-image: repeating-linear-gradient(
+        to right,
+        #b8a994,
+        #b8a994 1px,
+        transparent 1px,
+        transparent 8px
+      );
+      height: 6px;
+    }
+    .dark .ruler-top {
+      background-image: repeating-linear-gradient(
+        to right,
+        #2c4058,
+        #2c4058 1px,
+        transparent 1px,
+        transparent 8px
+      );
+    }
+
+    /* Mechanical 3D Tactile Pushbutton (Beveled 90s Workstation Style) */
+    .tactile-btn {
+      position: relative;
+      background: #e5ded2;
+      border-top: 2px solid #ffffff;
+      border-left: 2px solid #ffffff;
+      border-right: 2px solid #9c8e7a;
+      border-bottom: 2px solid #9c8e7a;
+      box-shadow: 2px 2px 0px rgba(0,0,0,0.15);
+      transition: all 0.08s ease-in-out;
+      cursor: pointer;
+    }
+    .tactile-btn:hover {
+      background: #eee8dc;
+    }
+    .tactile-btn:active {
+      border-top: 2px solid #7d7260;
+      border-left: 2px solid #7d7260;
+      border-right: 2px solid #fdfcf9;
+      border-bottom: 2px solid #fdfcf9;
+      box-shadow: inset 1px 1px 2px rgba(0,0,0,0.25);
+      transform: translate(1px, 1px);
+    }
+
+    /* Dark Mode Tactile Pushbutton */
+    .dark .tactile-btn {
+      background: #1f2e42;
+      border-top: 2px solid #3d5575;
+      border-left: 2px solid #3d5575;
+      border-right: 2px solid #0f1722;
+      border-bottom: 2px solid #0f1722;
+      box-shadow: 2px 2px 0px rgba(0,0,0,0.4);
+      color: #e2e8f0;
+    }
+    .dark .tactile-btn:hover {
+      background: #273952;
+    }
+    .dark .tactile-btn:active {
+      border-top: 2px solid #0b111a;
+      border-left: 2px solid #0b111a;
+      border-right: 2px solid #4a678d;
+      border-bottom: 2px solid #4a678d;
+      box-shadow: inset 1px 1px 3px rgba(0,0,0,0.6);
+    }
+
+    /* Primary Accent Pushbutton (Vintage Brick/Amber) */
+    .tactile-btn-primary {
+      background: #233b5d;
+      color: #f7f5f0 !important;
+      border-top: 2px solid #48658e;
+      border-left: 2px solid #48658e;
+      border-right: 2px solid #0d1b2a;
+      border-bottom: 2px solid #0d1b2a;
+      box-shadow: 2px 2px 0px rgba(0,0,0,0.25);
+    }
+    .tactile-btn-primary:hover {
+      background: #1c3150;
+    }
+    .dark .tactile-btn-primary {
+      background: #c25e00;
+      border-top: 2px solid #f99c3e;
+      border-left: 2px solid #f99c3e;
+      border-right: 2px solid #632d00;
+      border-bottom: 2px solid #632d00;
+      color: #0b111a !important;
+      font-weight: 700;
+    }
+    .dark .tactile-btn-primary:hover {
+      background: #d86900;
+    }
+
+    /* Chassis Technical Card */
+    .chassis-card {
+      background: #f7f3eb;
+      border: 1px solid #bdafa0;
+      box-shadow: 3px 3px 0px #cfc4b0;
+      position: relative;
+    }
+    .dark .chassis-card {
+      background: #141e2b;
+      border: 1px solid #2b4059;
+      box-shadow: 3px 3px 0px #0b111a;
+    }
+
+    /* Screw Rivet Effect */
+    .rivet {
+      width: 8px;
+      height: 8px;
+      background: #cfc5b4;
+      border: 1px solid #7d705c;
+      border-radius: 50%;
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .rivet::after {
+      content: '';
+      width: 4px;
+      height: 1px;
+      background: #473e31;
+      display: block;
+    }
+    .dark .rivet {
+      background: #2b3b4f;
+      border-color: #557297;
+    }
+    .dark .rivet::after {
+      background: #9ab4d6;
+    }
+
+    /* Scanline Overlay for Video & CRT elements */
+    .crt-scanlines {
+      background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.25) 50%
+      ), linear-gradient(
+        90deg,
+        rgba(255, 0, 0, 0.03),
+        rgba(0, 255, 0, 0.01),
+        rgba(0, 0, 255, 0.03)
+      );
+      background-size: 100% 3px, 6px 100%;
+    }
+
+    /* Custom Scrollbar for Retro Aesthetic */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #e3dacd;
+      border-left: 1px solid #bdafa0;
+    }
+    .dark ::-webkit-scrollbar-track {
+      background: #101823;
+      border-left: 1px solid #24354a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #a89882;
+      border: 2px solid #e3dacd;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #344c69;
+      border: 2px solid #101823;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #877761;
+    }
+    .dark ::-webkit-scrollbar-thumb:hover {
+      background: #496c94;
+    }
+
+    /* Redacted Document Marker */
+    .redacted {
+      background-color: #1c2833;
+      color: transparent;
+      user-select: none;
+      padding: 0 4px;
+      border-radius: 2px;
+      cursor: help;
+      display: inline-block;
+    }
+    .dark .redacted {
+      background-color: #000;
+    }
+
+    /* Terminal Blinking Cursor */
+    .crt-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 15px;
+      vertical-align: middle;
+      background: #c25e00;
+      animation: blink 0.9s infinite step-start;
+    }
+    .dark .crt-cursor {
+      background: #39ff14;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    /* Shake animation for invalid PIN */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .shake-denied {
+      animation: shake 0.4s ease-in-out;
+    }
